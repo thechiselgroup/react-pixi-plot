@@ -1,0 +1,34 @@
+{
+  "name": "@thechiselgroup/react-pixi-plot",
+  "version": "0.1.0",
+  "description": "A React component rendering a zoomable and draggable PIXI.js scene. Intended to render 2d plots",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thechiselgroup/react-pixi-plot.git"
+  },
+  "keywords": [
+    "React",
+    "PIXI.js",
+    "d3"
+  ],
+  "author": "The Chisel Group",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thechiselgroup/react-pixi-plot/issues"
+  },
+  "homepage": "https://github.com/thechiselgroup/react-pixi-plot#readme",
+  "dependencies": {
+    "normalize-wheel": "^1.0.1",
+    "pixi.js": "^4.7.3",
+    "react": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/pixi.js": "^4.7.2",
+    "@types/react": "^16.3.10"
+  }
+}

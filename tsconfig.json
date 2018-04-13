@@ -1,0 +1,23 @@
+{
+	"compilerOptions": {
+		"declaration": true,
+		"forceConsistentCasingInFileNames": true,
+		"noImplicitReturns": true,
+		"jsx": "react",
+		"allowSyntheticDefaultImports": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"module": "es2015",
+		"target": "es2015",
+		"moduleResolution": "node",
+		"baseUrl": ".",
+		"sourceMap": true,
+		"lib": [
+			"es2015", "es2017", "dom"
+		],
+		"outDir": "./dist"
+	},
+	"include": [
+		"src/**/*"
+	]
+}
