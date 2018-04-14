@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js'
-import color2color from './vendor/color2color'
+import color2color from 'colorcolor'
 
 export default class SVGGraphics extends PIXI.Container {
 	svgElement: HTMLElement
@@ -408,16 +408,16 @@ export default class SVGGraphics extends PIXI.Container {
 				attributes[key] = value
 			}
 		}
-
+		const re = /^rgba\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d+(?:\.\d+)?|\.\d+)\s*\)/
 		// Apply stroke style
 		if (attributes.stroke) {
 			let strokeColor = 0x000000
 			let strokeWidth = 1 * this.lineWidthScale
 			let strokeAlpha = 0
 
-			const color = color2color(attributes.stroke, 'array')
-			strokeColor =  256 * 256 * color[0] + 256 * color[1] + color[2]
-			strokeAlpha = color[3]
+			const color = re.exec(color2color(attributes.stroke, 'array'))
+			strokeColor =  256 * 256 * parseInt(color[0]) + 256 * parseInt(color[1]) +  parseInt(color[2])
+			strokeAlpha =  parseInt(color[3])
 
 			if (attributes['stroke-width']) {
 				strokeWidth = parseFloat(attributes['stroke-width']) * this.lineWidthScale
@@ -429,9 +429,9 @@ export default class SVGGraphics extends PIXI.Container {
 		if (attributes.fill && attributes.fill !== 'none') {
 			let fillColor = 0x000000
 			let fillAlpha = 0
-			const color = color2color(attributes.fill, 'array')
-			fillColor = 256 * 256 * color[0] + 256 * color[1] + color[2]
-			fillAlpha = color[3]
+			const color = re.exec(color2color(attributes.fill, 'array'))
+			fillColor = 256 * 256 * parseInt(color[0]) + 256 * parseInt(color[1]) +  parseInt(color[2])
+			fillAlpha = parseInt(color[3])
 
 			graphics.beginFill(fillColor, fillAlpha)
 		}
