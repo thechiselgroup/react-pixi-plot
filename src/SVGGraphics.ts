@@ -1,4 +1,5 @@
 import color2color from 'colorcolor'
+import * as PIXI from 'pixi.js'
 
 export default class SVGGraphics extends PIXI.Container {
 	svgElement: HTMLElement

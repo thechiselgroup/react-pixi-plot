@@ -1,6 +1,7 @@
 import React from 'react'
 import {SelectEvent, HoverEvent} from './types'
 import normalizeWheel from 'normalize-wheel'
+import * as PIXI from 'pixi.js'
 
 export interface Props {
 	pixiInteractionManager?: PIXI.interaction.InteractionManager

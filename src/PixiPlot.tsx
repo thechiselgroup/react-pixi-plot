@@ -1,6 +1,7 @@
 import React from 'react'
 import InteractionManager from './InteractionManager'
 import {SelectEvent, HoverEvent} from './types'
+import * as PIXI from 'pixi.js'
 
 export interface PixiPlotProps {
 
