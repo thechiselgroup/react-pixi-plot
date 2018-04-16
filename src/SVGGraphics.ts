@@ -1,4 +1,3 @@
-import * as PIXI from 'pixi.js'
 import color2color from 'colorcolor'
 
 export default class SVGGraphics extends PIXI.Container {

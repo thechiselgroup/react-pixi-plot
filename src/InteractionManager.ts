@@ -1,5 +1,4 @@
 import React from 'react'
-import * as PIXI from 'pixi.js'
 import {SelectEvent, HoverEvent} from './types'
 import normalizeWheel from 'normalize-wheel'
 

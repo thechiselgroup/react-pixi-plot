@@ -1,4 +1,3 @@
-import * as PIXI from 'pixi.js'
 import SVGGraphics from './SVGGraphics'
 
 export interface Tints {
