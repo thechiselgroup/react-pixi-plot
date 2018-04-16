@@ -1,8 +1,3 @@
-import SVGGraphics from './SVGGraphics'
-
-export interface Tints {
-	[index: string]: number
-}
 
 export interface SelectEvent {
 	pixelBounds: PIXI.Rectangle
@@ -18,19 +13,4 @@ export interface HoverEvent {
 	plotBounds: PIXI.Rectangle,
 	isBrushing: boolean,
 	nativeEvent: MouseEvent
-}
-
-export interface TintedSVGGraphics extends SVGGraphics {
-	colorValue: any,
-	tints: Tints,
-}
-
-export interface TintedGraphics extends PIXI.Graphics {
-	colorValue: any,
-	tints: Tints,
-}
-
-export interface TintedSprite extends PIXI.Sprite {
-	tints: Tints,
-	colorValue: any
 }
