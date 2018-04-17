@@ -415,9 +415,9 @@ export default class SVGGraphics extends PIXI.Container {
 			let strokeWidth = 1 * this.lineWidthScale
 			let strokeAlpha = 0
 
-			const color = re.exec(color2color(attributes.stroke, 'array'))
-			strokeColor =  256 * 256 * parseInt(color[0]) + 256 * parseInt(color[1]) +  parseInt(color[2])
-			strokeAlpha =  parseInt(color[3])
+			const color = re.exec(color2color(attributes.stroke))
+			strokeColor =  256 * 256 * parseInt(color[1]) + 256 * parseInt(color[2]) +  parseInt(color[3])
+			strokeAlpha =  parseInt(color[4])
 
 			if (attributes['stroke-width']) {
 				strokeWidth = parseFloat(attributes['stroke-width']) * this.lineWidthScale
@@ -430,8 +430,8 @@ export default class SVGGraphics extends PIXI.Container {
 			let fillColor = 0x000000
 			let fillAlpha = 0
 			const color = re.exec(color2color(attributes.fill, 'array'))
-			fillColor = 256 * 256 * parseInt(color[0]) + 256 * parseInt(color[1]) +  parseInt(color[2])
-			fillAlpha = parseInt(color[3])
+			fillColor = 256 * 256 * parseInt(color[1]) + 256 * parseInt(color[2]) +  parseInt(color[3])
+			fillAlpha = parseInt(color[4])
 
 			graphics.beginFill(fillColor, fillAlpha)
 		}
