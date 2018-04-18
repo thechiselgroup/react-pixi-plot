@@ -12,7 +12,7 @@ export interface PixiPlotProps {
 	 */
 	readonly displayObjects: PIXI.DisplayObject[],
 
-	readonly displayObjectsInFront: PIXI.DisplayObject[],
+	readonly displayObjectsInFront?: PIXI.DisplayObject[],
 
 	/**
 	 * A Rectangle defining the bounds of the display objects. This is use for the initial rendering of the plot, when computing the scale and position of the plot container.
