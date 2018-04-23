@@ -429,7 +429,7 @@ export default class SVGGraphics extends PIXI.Container {
 		if (attributes.fill && attributes.fill !== 'none') {
 			let fillColor = 0x000000
 			let fillAlpha = 0
-			const color = re.exec(color2color(attributes.fill, 'array'))
+			const color = re.exec(color2color(attributes.fill))
 			fillColor = 256 * 256 * parseInt(color[1]) + 256 * parseInt(color[2]) +  parseInt(color[3])
 			fillAlpha = parseInt(color[4])
 
