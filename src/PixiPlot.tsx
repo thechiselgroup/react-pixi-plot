@@ -125,6 +125,8 @@ export interface PixiPlotProps {
 	readonly shouldYScaleUpdate?: (nextYScale: number, isZooming: boolean, isResizing: boolean, target: PixiPlot) => boolean
 
 	readonly dirty?: number
+
+	readonly manageInteractions?: boolean
 }
 
 export interface PixiPlotState {
@@ -141,6 +143,7 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
 		},
 		keepAspectRatio: false,
 		dirty: 0,
+		manageInteractions: true,
 		invertYScale: false,
 		scaleWillUpdate: () => {},
 		scaleDidUpdate: () => {},
@@ -582,7 +585,7 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
 	 * @returns {JSX} PixiVisualization component that is initialized with functionality.
 	 */
 	render() {
-		const {size} = this.props
+		const {size, manageInteractions} = this.props
 		const {left, right, top, bottom} = this.props.rendererMargins
 		const style = {
 			marginLeft: left + 'px',
@@ -593,20 +596,29 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
 
 		const pixiInteractionManager = this.renderer ? this.renderer.plugins.interaction : undefined
 
+		if (manageInteractions) {
+			return (
+				<InteractionManager
+					onSelect={this.handleSelect}
+					onHover={this.handleHover}
+					onPan={this.pan}
+					onZoom={this.zoom}
+					pixiInteractionManager={pixiInteractionManager}
+					plotSize={size}
+				>
+					<div
+						style={style}
+						ref={this.appendRenderer}
+					/>
+				</InteractionManager>
+			)
+		}
+
 		return (
-			<InteractionManager
-				onSelect={this.handleSelect}
-				onHover={this.handleHover}
-				onPan={this.pan}
-				onZoom={this.zoom}
-				pixiInteractionManager={pixiInteractionManager}
-				plotSize={size}
-			>
 			<div
 				style={style}
 				ref={this.appendRenderer}
 			/>
-			</InteractionManager>
 		)
 	}
 }
