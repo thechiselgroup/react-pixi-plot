@@ -1,6 +1,6 @@
 {
   "name": "@thechiselgroup/react-pixi-plot",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A React component rendering a zoomable and draggable PIXI.js scene. Intended to render 2d plots",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
