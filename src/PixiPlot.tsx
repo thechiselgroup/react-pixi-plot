@@ -257,11 +257,12 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
 
 		if (prevProps.displayObjectsInFront !== this.props.displayObjectsInFront) {
 			for (const o of prevProps.displayObjectsInFront) {
-				this.plotContainer.removeChild(o)
+				if (!this.props.displayObjects.includes(o)) // Do not remove an object that is still in the displayObjects list
+					this.plotContainer.removeChild(o)
 			}
 
 			for (const o of this.props.displayObjectsInFront) {
-				this.plotContainer.removeChild(o)
+				this.plotContainer.removeChild(o) // Put the objects back in front
 				this.plotContainer.addChild(o)
 			}
 			this.renderStage()
