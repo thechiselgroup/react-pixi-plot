@@ -307,14 +307,18 @@ export default class InteractionManager extends React.PureComponent<Props> {
   }
 
   render() {
-    return React.cloneElement(this.props.children, {
-      onMouseDown: this.handleMouseDown,
-      onWheel: this.handleWheel,
-      onMouseMove: this.handleMouseMove,
-      onTouchStart: this.handleTouchStart,
-      onTouchEnd: this.handleTouchEnd,
-      onTouchMove: this.handleTouchMove,
-    });
+    return (
+      <div
+        onMouseDown={this.handleMouseDown}
+        onWheel={this.handleWheel}
+        onMouseMove={this.handleMouseMove}
+        onTouchStart={this.handleTouchStart}
+        onTouchEnd={this.handleTouchEnd}
+        onTouchMove={this.handleTouchMove}
+      >
+        {this.props.children}
+      </div>
+    );
   }
 
 }

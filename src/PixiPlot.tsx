@@ -1,17 +1,10 @@
 import React from 'react';
-import InteractionManager from './InteractionManager';
+import Viewport from './Viewport';
 import { SelectEvent, HoverEvent } from './types';
 import * as PIXI from 'pixi.js';
+import { Stage, Container, AppContext } from 'react-pixi-fiber';
 
 export interface PixiPlotProps {
-
-  /**
-   * An array of DisplayObject that will be added to the plotContainer.
-   * The elements contained in this array *can* be mutated.
-   * The changes will be handled by PIXI, not react
-   * If a new array of objects is passed, a zoomToFit will be triggered.
-   */
-  readonly displayObjects: PIXI.DisplayObject[];
 
   readonly displayObjectsInFront?: PIXI.DisplayObject[];
 
@@ -152,11 +145,18 @@ export interface PixiPlotProps {
   readonly dirty?: number;
 
   readonly manageInteractions?: boolean;
+
+  readonly children: any[];
 }
 
 export interface PixiPlotState {
   readonly yScaleInverter: number;
 }
+
+const STAGE_OPTIONS = {
+  antialias: true,
+  backgroundColor: 0xFFFFFF,
+};
 
 export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotState> {
   static defaultProps = {
@@ -183,33 +183,12 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
   };
 
   plotContainer: PIXI.Container;
-  stage: PIXI.Container;
   selectionOverlayContainer: PIXI.Container;
-  renderer: PIXI.WebGLRenderer;
   zoomFactorX: number;
   zoomFactorY: number;
 
   constructor(props: PixiPlotProps) {
     super(props);
-
-    // Creating the hierarchy of Pixi Containers needed for different layers of the visualization.
-    /**
-     * The root display {@link http://pixijs.download/dev/docs/PIXI.Container.html| Pixi.Container}.
-     * Consumes all other PixiContainers like {@link PixiVisualization#stage|stage}
-     * and {@link PixiVisualization#plotContainer|plotContainer}.
-     * @member
-     */
-    this.stage = new PIXI.Container();
-
-    /**
-     * The data plotting
-     * {@link http://pixijs.download/dev/docs/PIXI.Container.html| Pixi.Container}.
-     * @member
-     */
-    this.plotContainer = new PIXI.Container();
-    for (const obj of props.displayObjects) {
-      this.plotContainer.addChild(obj);
-    }
 
     /**
      * The selection overlay
@@ -217,24 +196,6 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
      * @member
      */
     this.selectionOverlayContainer = new PIXI.Container();
-
-    // Make plotContainer and selectionOverlayContainer children of the stage container.
-    this.stage.addChild(this.plotContainer);
-    this.stage.addChild(this.selectionOverlayContainer);
-
-    // The renderer passes settings into the Pixi Interaction Manager instance.
-    /**
-     * The {@link http://pixijs.download/dev/docs/PIXI.WebGLRenderer.html| Pixi.WebGLRenderer}
-     * which handles drawing the scene contents.
-     * @member
-     */
-    this.renderer = new PIXI.WebGLRenderer({
-      width: this.getRendererWidth(),
-      height: this.getRendererHeight(),
-      antialias: true,
-      autoResize: true,
-      backgroundColor: 0xFFFFFF,
-    });
 
     /**
      * The zoom factor used in calculations of view rendering. Intialized to 1.
@@ -246,26 +207,6 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
     this.state = {
       yScaleInverter: props.invertYScale ? -1 : 1,
     };
-  }
-
-  /**
-   * Define {@link https://reactjs.org/docs/react-component.html#componentwillmount|React.Component}
-   * function called before the component unmounts.
-   * @method
-   * @override
-   * @returns {undefined}
-   */
-  componentWillUnmount() {
-    this.renderer.destroy(true);
-    this.stage.destroy();
-  }
-
-  updateDisplayObjects = () => {
-    const { displayObjects } = this.props;
-    this.plotContainer.removeChildren();
-    for (const obj of displayObjects) {
-      this.plotContainer.addChild(obj);
-    }
   }
 
   /**
@@ -284,33 +225,8 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
       this.resize();
     }
 
-    if (prevProps.displayObjects !== this.props.displayObjects) {
-      this.updateDisplayObjects();
-      this.zoomToFit();
-      this.renderStage();
-    }
-
-    if (prevProps.displayObjectsInFront !== this.props.displayObjectsInFront) {
-      for (const o of prevProps.displayObjectsInFront) {
-        if (!this.props.displayObjects.includes(o)) {
-          // Do not remove an object that is still in the displayObjects list
-          this.plotContainer.removeChild(o);
-        }
-      }
-
-      for (const o of this.props.displayObjectsInFront) {
-        this.plotContainer.removeChild(o); // Put the objects back in front
-        this.plotContainer.addChild(o);
-      }
-      this.renderStage();
-    }
-
     if (prevProps.displayObjectsBounds !== this.props.displayObjectsBounds) {
       this.zoomToFit();
-    }
-
-    if  (prevProps.dirty !== this.props.dirty) {
-      this.renderStage();
     }
   }
 
@@ -358,7 +274,6 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
 
       updatedPosition = this.updatePosition(nextXPos, nextYPos);
 
-      this.renderStage();
       this.props.scaleDidUpdate(this);
 
       if (updatedPosition) this.props.positionDidUpdate(this);
@@ -371,7 +286,6 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
    * @returns {void}
    */
   resize = () => {
-    this.renderer.resize(this.getRendererWidth(), this.getRendererHeight());
     this.rescale(new PIXI.Point(0, 0), false, true);
   }
 
@@ -391,7 +305,6 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
       left - this.getDisplayObjectsBounds().left * scale.x,
       top - this.getDisplayObjectsBounds().top * scale.y,
     )) {
-      this.renderStage();
       this.props.positionDidUpdate(this);
     }
   }
@@ -409,7 +322,6 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
     const nextYPos = position.y + (to.y - from.y);
 
     if (this.updatePosition(nextXPos, nextYPos)) {
-      this.renderStage();
       this.props.positionDidUpdate(this);
     }
   }
@@ -535,7 +447,6 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
     selectionOverlay.drawRect(rect.left, rect.top, rect.width, rect.height);
 
     this.selectionOverlayContainer.addChild(selectionOverlay);
-    this.renderStage();
   }
 
   /**
@@ -603,28 +514,6 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
     return size.height - top - bottom;
   }
 
-  /**
-   * Renders the stage.
-   * @method
-   * @returns {undefined}
-   */
-  renderStage = () => {
-    this.renderer.render(this.stage);
-  }
-
-  /**
-   * Attaches the renderer to the PixiVisualization component.
-   * @method
-   * @param {object} component The component we are attaching the renderer to.
-   * @returns {undefined}
-   */
-  appendRenderer = (component: HTMLDivElement) => {
-    if (component === null) return;
-    component.appendChild(this.renderer.view);
-    this.zoomToFit();
-    this.renderStage();
-  }
-
   pixelToPlotBounds = (pixelBounds: PIXI.Rectangle) => {
     const topLeft = this.rendererToStagePosition(new PIXI.Point(pixelBounds.left, pixelBounds.top));
     const width = pixelBounds.width / this.plotContainer.scale.x;
@@ -662,40 +551,30 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
    * @returns {JSX} PixiVisualization component that is initialized with functionality.
    */
   render() {
-    const { size, manageInteractions } = this.props;
-    const { left, right, top, bottom } = this.props.rendererMargins;
-    const style = {
+    // const { left, right, top, bottom } = this.props.rendererMargins;
+    /*const style = {
       marginLeft: left ,
       marginRight: right,
       marginTop: top ,
       marginBottom: bottom,
-    };
-
-    const pixiInteractionManager = this.renderer ? this.renderer.plugins.interaction : undefined;
-
-    if (manageInteractions) {
-      return (
-        <InteractionManager
-          onSelect={this.handleSelect}
-          onHover={this.handleHover}
-          onPan={this.pan}
-          onZoom={this.zoom}
-          pixiInteractionManager={pixiInteractionManager}
-          plotSize={size}
-        >
-          <div
-            style={style}
-            ref={this.appendRenderer}
-          />
-        </InteractionManager>
-      );
-    }
+    };*/
 
     return (
-      <div
-        style={style}
-        ref={this.appendRenderer}
-      />
+      <Stage
+        width={this.getRendererWidth()}
+        height={this.getRendererHeight()}
+        options={STAGE_OPTIONS}
+      >
+        <AppContext.Consumer>
+          {app =>
+            <Viewport app={app}>
+              <Container>
+                {this.props.children}
+              </Container>
+            </Viewport>
+          }
+        </AppContext.Consumer>
+      </Stage>
     );
   }
 }

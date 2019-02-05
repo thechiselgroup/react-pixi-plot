@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "release": "standard-version",
-    "prepare": "tsc"
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -26,7 +26,8 @@
   "homepage": "https://github.com/thechiselgroup/react-pixi-plot#readme",
   "dependencies": {
     "colorcolor": "^1.1.1",
-    "normalize-wheel": "^1.0.1"
+    "normalize-wheel": "^1.0.1",
+    "pixi-viewport": "^3.17.0"
   },
   "devDependencies": {
     "@types/pixi.js": "^4.7.2",
@@ -40,7 +41,8 @@
   },
   "peerDependencies": {
     "pixi.js": "^4.7.0",
-    "react": "^16.0.0"
+    "react": "^16.0.0",
+    "react-pixi-fiber": "^0.7.0"
   },
   "config": {
     "commitizen": {

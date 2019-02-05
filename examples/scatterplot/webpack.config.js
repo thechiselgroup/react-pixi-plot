@@ -1,6 +1,7 @@
 const path = require('path')
 
 module.exports = {
+	mode: 'development',
 	entry: path.resolve('src/index.tsx'),
 	output: {
 		path: path.resolve('dist'),
@@ -22,6 +23,11 @@ module.exports = {
 		]
 	},
 	resolve: {
-		extensions: ['.json', '.ts', '.tsx', '.js', '.jsx']
+		extensions: ['.json', '.ts', '.tsx', '.js', '.jsx'],
+		alias: {
+			react: path.resolve(__dirname, 'node_modules/react'),
+			'pixi.js': path.resolve(__dirname, 'node_modules/pixi.js'),
+			'react-pixi-fiber': path.resolve(__dirname, 'node_modules/react-pixi-fiber')
+		}
 	}
 }
