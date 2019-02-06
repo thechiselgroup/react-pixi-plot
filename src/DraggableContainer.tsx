@@ -1,6 +1,7 @@
-import { CustomPIXIComponent, Behavior } from 'react-pixi-fiber';
+import { CustomPIXIComponent, Behavior, AppContext } from 'react-pixi-fiber';
 import * as PIXI from 'pixi.js';
 import { preventGlobalMouseEvents, restoreGlobalMouseEvents } from './globalEvents';
+import React from 'react';
 
 const TYPE = 'DraggableContainer';
 
@@ -25,7 +26,6 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
     instance.hitArea = instance.getBounds();
 
     instance.on('rightdown', (e: PIXI.interaction.InteractionEvent) => {
-      console.log('down');
       this.draggedInstance = instance;
       this.dragAnchor = e.data.getLocalPosition(this.draggedInstance.parent);
       e.stopPropagation();
@@ -151,4 +151,17 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
 
 }
 
-export default CustomPIXIComponent<Props, PIXI.Container>(new DraggableContainerBehavior(), TYPE);
+const DraggablePIXI = CustomPIXIComponent<Props, PIXI.Container>(
+  new DraggableContainerBehavior(), TYPE,
+);
+
+const DraggableContainer: React.SFC = props => (
+  <AppContext.Consumer>
+    {app =>
+      <DraggablePIXI pixiInteractionManager={app.renderer.plugins.interaction}>
+        {props.children}
+      </DraggablePIXI> }
+  </AppContext.Consumer>
+);
+
+export default DraggableContainer;

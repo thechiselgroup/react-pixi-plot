@@ -2,7 +2,7 @@ import React from 'react';
 import DraggableContainer from './DraggableContainer';
 import { SelectEvent, HoverEvent } from './types';
 import * as PIXI from 'pixi.js';
-import { Stage, Container, AppContext } from 'react-pixi-fiber';
+import { Stage, Container } from 'react-pixi-fiber';
 
 const preventDefault = (e: React.MouseEvent<HTMLElement>) => {
   e.nativeEvent.preventDefault();
@@ -554,17 +554,11 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
         height={this.getRendererHeight()}
         options={STAGE_OPTIONS}
       >
-        <AppContext.Consumer>
-          {app =>
-            <DraggableContainer
-              pixiInteractionManager={app.renderer.plugins.interaction}
-            >
-              <Container>
-                {this.props.children}
-              </Container>
-            </DraggableContainer>
-          }
-        </AppContext.Consumer>
+        <DraggableContainer>
+          <Container>
+            {this.props.children}
+          </Container>
+        </DraggableContainer>
       </Stage>
       </div>
     );

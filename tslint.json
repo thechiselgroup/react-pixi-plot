@@ -3,7 +3,7 @@
   "rules" : {
     "import-name": false,
     "variable-name": {
-      "options": ["allow-leading-underscore"]
+      "options": ["allow-leading-underscore", "allow-pascal-case"]
     },
     "no-increment-decrement": false
   }
