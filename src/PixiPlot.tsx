@@ -1,8 +1,13 @@
 import React from 'react';
-import Viewport from './Viewport';
+import DraggableContainer from './DraggableContainer';
 import { SelectEvent, HoverEvent } from './types';
 import * as PIXI from 'pixi.js';
 import { Stage, Container, AppContext } from 'react-pixi-fiber';
+
+const preventDefault = (e: React.MouseEvent<HTMLElement>) => {
+  e.nativeEvent.preventDefault();
+  return true;
+};
 
 export interface PixiPlotProps {
 
@@ -310,23 +315,6 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
   }
 
   /**
-   * Pans the view inside of the renderer based on the mouse position.
-   * @method
-   * @param {object} mousePosition The position seen inside the event which triggered
-   * {@link PixiVisualization#mouseMoveListener|mouseMoveListener}.
-   * @returns {undefined}
-   */
-  pan = (from: PIXI.Point, to: PIXI.Point) => {
-    const { position } = this.plotContainer;
-    const nextXPos = position.x + (to.x - from.x);
-    const nextYPos = position.y + (to.y - from.y);
-
-    if (this.updatePosition(nextXPos, nextYPos)) {
-      this.props.positionDidUpdate(this);
-    }
-  }
-
-  /**
    * Updates the container scale based on the current zoomFactor
    * @method
    * @returns {boolean} True if the scale changed, otherwise false.
@@ -560,6 +548,7 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
     };*/
 
     return (
+      <div onContextMenu={preventDefault}>
       <Stage
         width={this.getRendererWidth()}
         height={this.getRendererHeight()}
@@ -567,14 +556,17 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
       >
         <AppContext.Consumer>
           {app =>
-            <Viewport app={app}>
+            <DraggableContainer
+              pixiInteractionManager={app.renderer.plugins.interaction}
+            >
               <Container>
                 {this.props.children}
               </Container>
-            </Viewport>
+            </DraggableContainer>
           }
         </AppContext.Consumer>
       </Stage>
+      </div>
     );
   }
 }

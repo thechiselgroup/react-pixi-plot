@@ -2,7 +2,7 @@ import { render } from 'react-dom';
 import * as PIXI from 'pixi.js';
 import React from 'react';
 import countries from './countries.json';
-import { PixiPlot } from '@thechiselgroup/react-pixi-plot';
+import { PixiPlot } from '../../../src';
 import white_circle from './white_circle.png';
 import { scaleLinear } from 'd3-scale';
 import { extent } from 'd3-array';
