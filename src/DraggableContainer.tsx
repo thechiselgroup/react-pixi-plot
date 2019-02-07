@@ -23,7 +23,7 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
 
   customDidAttach = (instance: PIXI.Container) => {
     instance.interactive = true;
-    instance.hitArea = instance.getBounds();
+    instance.hitArea = { contains: () => true };
 
     instance.on('rightdown', (e: PIXI.interaction.InteractionEvent) => {
       this.draggedInstance = instance;
