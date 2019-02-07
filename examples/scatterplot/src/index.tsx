@@ -6,7 +6,7 @@ import { PixiPlot } from '../../../src';
 import white_circle from './white_circle.png';
 import { scaleLinear } from 'd3-scale';
 import { extent } from 'd3-array';
-import { Sprite } from 'react-pixi-fiber';
+import RescalingSprite from '../../../src/RescalingSprite';
 
 const PLOT_SIZE = {
   width: 500,
@@ -23,7 +23,7 @@ PIXI.loader.load(() => {
   const displayObjectsBounds = new PIXI.Rectangle(0, 0, 500, 300);
 
   const displayObjects = countries.map((country) => {
-    return <Sprite
+    return <RescalingSprite
       key={country.Name}
       texture={PIXI.loader.resources.circle.texture}
       position={new PIXI.Point(xScale(country.NetMigration), yScale(country.Literacy))}
