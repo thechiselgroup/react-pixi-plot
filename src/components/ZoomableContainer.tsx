@@ -2,6 +2,7 @@ import { CustomPIXIComponent, Behavior, AppContext } from 'react-pixi-fiber';
 import * as PIXI from 'pixi.js';
 import React from 'react';
 import normalizeWheel from 'normalize-wheel';
+import { distance } from '../utils';
 
 const TYPE = 'ZoomableContainer';
 
@@ -13,8 +14,7 @@ export const zoomEventEmitter = new PIXI.utils.EventEmitter();
 
 class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
   props: Props;
-  dragAnchor: PIXI.Point;
-  draggedInstance: PIXI.Container;
+  initialPinchDistance: number;
 
   customDisplayObject = (props: Props) => {
     const zoomable = new PIXI.Container();
@@ -24,6 +24,13 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
       const found = props.app.renderer.plugins.interaction.hitTest(position, zoomable);
       if (found) zoomable.emit('wheel', e);
     });
+
+    props.app.view.addEventListener('touchstart', (e) => {
+      const position = new PIXI.Point(e.touches.item(0).clientX, e.touches.item(0).clientY);
+      const found = props.app.renderer.plugins.interaction.hitTest(position, zoomable);
+      if (found) zoomable.emit('starttouch', e);
+    });
+
     return zoomable;
   }
 
@@ -42,11 +49,46 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
       e.preventDefault();
     });
 
+    instance.on('starttouch', this.handleTouchStart);
+    instance.on('endtouch', this.handleTouchEnd);
+    instance.on('movetouch', this.handleTouchMove);
+
     zoomEventEmitter.emit('zoom', instance);
   }
 
   customWillDetach = (instance: PIXI.Container) => {
     instance.removeAllListeners();
+  }
+
+  handleTouchStart = (e: TouchEvent) => {
+    if (e.targetTouches.length === 2) {
+      const a = this.getTouchPosition(e.targetTouches.item(0));
+      const b = this.getTouchPosition(e.targetTouches.item(1));
+      this.initialPinchDistance = distance(a, b);
+    }
+  }
+
+  handleTouchEnd = (e: PIXI.interaction.InteractionEvent) => {
+    if ((e.data.originalEvent as TouchEvent).targetTouches.length === 1) {
+      delete this.initialPinchDistance;
+    }
+  }
+
+  handleTouchMove = (e: PIXI.interaction.InteractionEvent) => {
+    const targetTouches = (e.data.originalEvent as TouchEvent).targetTouches;
+    if (targetTouches.length === 2) {
+      const a = this.getTouchPosition(targetTouches.item(0));
+      const b = this.getTouchPosition(targetTouches.item(1));
+      const newPinchDistance = distance(a, b);
+      this.zoom(e.target as PIXI.Container, newPinchDistance / this.initialPinchDistance, a);
+    }
+  }
+
+  getTouchPosition = (mouseEvent: Touch) => {
+    const mousePosition = new PIXI.Point();
+    this.props.app.renderer.plugins.interaction
+      .mapPositionToPoint(mousePosition, mouseEvent.clientX, mouseEvent.clientY);
+    return mousePosition;
   }
 
     /**

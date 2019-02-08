@@ -33,10 +33,13 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
     });
 
     instance.on('touchStart', (e: PIXI.interaction.InteractionEvent) => {
+      console.log('touch');
       const originalEvent = e.data.originalEvent as TouchEvent;
       this.draggedInstance = instance;
       if (originalEvent.targetTouches.length === 1) {
         this.dragAnchor = this.eventRendererPosition(originalEvent.targetTouches.item(0));
+      } else if (this.dragAnchor) {
+        delete this.dragAnchor;
       }
     });
   }
@@ -57,10 +60,9 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
   eventRendererPosition = (
     mouseEvent: MouseEvent | React.MouseEvent<HTMLDivElement> | React.Touch,
   ) => {
-    const { mapPositionToPoint } = this.props.pixiInteractionManager;
     const mousePosition = new PIXI.Point();
-    mapPositionToPoint
-    .bind(this.props.pixiInteractionManager)(mousePosition, mouseEvent.clientX, mouseEvent.clientY);
+    this.props.pixiInteractionManager
+      .mapPositionToPoint(mousePosition, mouseEvent.clientX, mouseEvent.clientY);
     return mousePosition;
   }
 
