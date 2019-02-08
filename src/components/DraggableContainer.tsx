@@ -1,6 +1,6 @@
 import { CustomPIXIComponent, Behavior, AppContext } from 'react-pixi-fiber';
 import * as PIXI from 'pixi.js';
-import { preventGlobalMouseEvents, restoreGlobalMouseEvents } from './globalEvents';
+import { preventGlobalMouseEvents, restoreGlobalMouseEvents } from '../globalEvents';
 import React from 'react';
 
 const TYPE = 'DraggableContainer';
@@ -140,7 +140,6 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
    * @method
    * @param {object} mousePosition The position seen inside the event which triggered
    * {@link PixiVisualization#mouseMoveListener|mouseMoveListener}.
-   * @returns {undefined}
    */
   drag = (from: PIXI.Point, to: PIXI.Point) => {
     const { position } = this.draggedInstance;

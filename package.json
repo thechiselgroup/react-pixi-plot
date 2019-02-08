@@ -26,7 +26,8 @@
   "homepage": "https://github.com/thechiselgroup/react-pixi-plot#readme",
   "dependencies": {
     "colorcolor": "^1.1.1",
-    "normalize-wheel": "^1.0.1"
+    "normalize-wheel": "^1.0.1",
+    "react-container-dimensions": "1.4.1"
   },
   "devDependencies": {
     "@types/pixi.js": "^4.7.2",

@@ -1,9 +1,8 @@
 import React from 'react';
-import DraggableContainer from './DraggableContainer';
 import { SelectEvent, HoverEvent } from './types';
 import * as PIXI from 'pixi.js';
-import { Stage, Container } from 'react-pixi-fiber';
-import ZoomableContainer from './ZoomableContainer';
+import { Stage } from 'react-pixi-fiber';
+import ContainerDimensions from 'react-container-dimensions';
 
 const preventDefault = (e: React.MouseEvent<HTMLElement>) => {
   e.nativeEvent.preventDefault();
@@ -151,8 +150,6 @@ export interface PixiPlotProps {
   readonly dirty?: number;
 
   readonly manageInteractions?: boolean;
-
-  readonly children: any[];
 }
 
 export interface PixiPlotState {
@@ -540,7 +537,7 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
    * @returns {JSX} PixiVisualization component that is initialized with functionality.
    */
   render() {
-    // const { left, right, top, bottom } = this.props.rendererMargins;
+    const { left, right, top, bottom } = this.props.rendererMargins;
     /*const style = {
       marginLeft: left ,
       marginRight: right,
@@ -549,20 +546,20 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
     };*/
 
     return (
-      <div onContextMenu={preventDefault}>
-      <Stage
-        width={this.getRendererWidth()}
-        height={this.getRendererHeight()}
-        options={STAGE_OPTIONS}
-      >
-        <DraggableContainer>
-          <ZoomableContainer>
-            <Container>
-              {this.props.children}
-            </Container>
-          </ZoomableContainer>
-        </DraggableContainer>
-      </Stage>
+      <div style={{ width: '100%', height: '100%' }}>
+        <ContainerDimensions>
+          { ({ width, height }) =>
+            <div onContextMenu={preventDefault}>
+              <Stage
+                width={width - left - right}
+                height={height - top - bottom}
+                options={STAGE_OPTIONS}
+              >
+                {this.props.children}
+              </Stage>
+            </div>
+        }
+        </ContainerDimensions>
       </div>
     );
   }

@@ -1,6 +1,5 @@
 import { CustomPIXIComponent, Behavior, AppContext } from 'react-pixi-fiber';
 import * as PIXI from 'pixi.js';
-// import { preventGlobalMouseEvents, restoreGlobalMouseEvents } from './globalEvents';
 import React from 'react';
 import normalizeWheel from 'normalize-wheel';
 
@@ -9,6 +8,8 @@ const TYPE = 'ZoomableContainer';
 interface Props {
   app: PIXI.Application;
 }
+
+export const zoomEventEmitter = new PIXI.utils.EventEmitter();
 
 class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
   props: Props;
@@ -41,6 +42,7 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
       e.preventDefault();
     });
 
+    zoomEventEmitter.emit('zoom', instance);
   }
 
   customWillDetach = (instance: PIXI.Container) => {
@@ -67,6 +69,7 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
     const nextXPos = position.x + (localPositionAfter.x - localPositionBefore.x) * scale.x;
     const nextYPos = position.y + (localPositionAfter.y - localPositionBefore.y) * scale.y;
     position.set(nextXPos, nextYPos);
+    zoomEventEmitter.emit('zoom', instance);
   }
 }
 

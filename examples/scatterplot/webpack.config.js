@@ -32,7 +32,8 @@ module.exports = {
 		alias: {
 			react: path.resolve(__dirname, 'node_modules/react/'),
 			'pixi.js': path.resolve(__dirname, 'node_modules/pixi.js/'),
-			'react-pixi-fiber': path.resolve(__dirname, 'node_modules/react-pixi-fiber/')
+			'react-pixi-fiber': path.resolve(__dirname, 'node_modules/react-pixi-fiber/'),
+			'react-dom': path.resolve(__dirname, 'node_modules/react-dom/'),
 		}
 	}
 }
