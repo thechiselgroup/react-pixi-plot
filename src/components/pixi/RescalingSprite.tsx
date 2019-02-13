@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { CustomPIXIComponent, Behavior, SpriteProperties } from 'react-pixi-fiber';
 import { zoomEventEmitter } from './ZoomableContainer';
-import { hasParent } from '../utils';
+import { hasParent } from '../../utils';
 
 interface RescalingSpriteProperties extends SpriteProperties {
   pixelWidth: number;

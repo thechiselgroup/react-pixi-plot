@@ -8,11 +8,11 @@ export { SVGGraphics };
 import { HoverEvent, SelectEvent } from './types';
 export { HoverEvent, SelectEvent };
 
-import DraggableContainer from './components/DraggableContainer';
+import DraggableContainer from './components/pixi/DraggableContainer';
 export { DraggableContainer };
 
-import ZoomableContainer from './components/ZoomableContainer';
+import ZoomableContainer from './components/pixi/ZoomableContainer';
 export { ZoomableContainer };
 
-import RescalingSprite from './components/RescalingSprite';
+import RescalingSprite from './components/pixi/RescalingSprite';
 export { RescalingSprite };

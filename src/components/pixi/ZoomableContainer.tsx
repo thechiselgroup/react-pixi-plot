@@ -2,7 +2,7 @@ import { CustomPIXIComponent, Behavior, AppContext } from 'react-pixi-fiber';
 import * as PIXI from 'pixi.js';
 import React from 'react';
 import normalizeWheel from 'normalize-wheel';
-import { distance } from '../utils';
+import { distance } from '../../utils';
 
 const TYPE = 'ZoomableContainer';
 
@@ -25,11 +25,11 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
       if (found) zoomable.emit('wheel', e);
     });
 
-    props.app.view.addEventListener('touchstart', (e) => {
+    /*props.app.view.addEventListener('touchstart', (e) => {
       const position = new PIXI.Point(e.touches.item(0).clientX, e.touches.item(0).clientY);
       const found = props.app.renderer.plugins.interaction.hitTest(position, zoomable);
       if (found) zoomable.emit('starttouch', e);
-    });
+    });*/
 
     return zoomable;
   }

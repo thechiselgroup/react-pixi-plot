@@ -8,11 +8,6 @@ import { scaleLinear } from 'd3-scale';
 import { extent } from 'd3-array';
 import { RescalingSprite, DraggableContainer, ZoomableContainer } from '../../../src/';
 
-const PLOT_SIZE = {
-  width: 500,
-  height: 300,
-};
-
 PIXI.loader.add('circle', white_circle);
 PIXI.loader.load(() => {
   const xScale = scaleLinear()
@@ -32,12 +27,31 @@ PIXI.loader.load(() => {
   });
 
   render(
-  <PixiPlot size={PLOT_SIZE}>
-    <DraggableContainer>
-      <ZoomableContainer>
-        {displayObjects}
-      </ZoomableContainer>
-    </DraggableContainer>
-  </PixiPlot>,
-  document.getElementById('container'));
+    <div style={{
+      marginLeft:'25%', marginRight:'25%', marginTop: 50, marginBottom: 50,
+      border: '1px solid black',
+    }}>
+      <PixiPlot
+        leftAxisScale={yScale} leftLabel={'Literacy'}
+        rendererMargins={{ left:50, right:0, top:0, bottom:0 }}
+      >
+        <DraggableContainer>
+          <ZoomableContainer>
+            {displayObjects}
+          </ZoomableContainer>
+        </DraggableContainer>
+      </PixiPlot>
+      <PixiPlot
+        leftAxisScale={yScale} leftLabel={'Literacy'}
+        rendererMargins={{ left:50, right:0, top:0, bottom:0 }}
+      >
+        <DraggableContainer>
+          <ZoomableContainer>
+            {displayObjects}
+          </ZoomableContainer>
+        </DraggableContainer>
+      </PixiPlot>
+    </div>
+    ,
+    document.getElementById('container'));
 });

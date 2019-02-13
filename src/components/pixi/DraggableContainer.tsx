@@ -1,6 +1,6 @@
 import { CustomPIXIComponent, Behavior, AppContext } from 'react-pixi-fiber';
 import * as PIXI from 'pixi.js';
-import { preventGlobalMouseEvents, restoreGlobalMouseEvents } from '../globalEvents';
+import { preventGlobalMouseEvents, restoreGlobalMouseEvents } from '../../globalEvents';
 import React from 'react';
 
 const TYPE = 'DraggableContainer';
