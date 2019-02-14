@@ -1,44 +1,25 @@
 import { CustomPIXIComponent, Behavior, AppContext } from 'react-pixi-fiber';
 import * as PIXI from 'pixi.js';
-import React from 'react';
+import React, { Dispatch } from 'react';
 import normalizeWheel from 'normalize-wheel';
 import { distance } from '../../utils';
+import { PixiPlotActions, PixiPlotContext } from '../../PlotContext';
 
 const TYPE = 'ZoomableContainer';
 
 interface Props {
   app: PIXI.Application;
+  dispatch: Dispatch<PixiPlotActions>;
 }
-
-export const zoomEventEmitter = new PIXI.utils.EventEmitter();
 
 class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
   props: Props;
   initialPinchDistance: number;
 
   customDisplayObject = (props: Props) => {
-    const zoomable = new PIXI.Container();
-    this.props = props;
+    const instance = new PIXI.Container();
     props.app.view.addEventListener('wheel', (e) => {
-      const position = new PIXI.Point(e.clientX, e.clientY);
-      const found = props.app.renderer.plugins.interaction.hitTest(position, zoomable);
-      if (found) zoomable.emit('wheel', e);
-    });
-
-    /*props.app.view.addEventListener('touchstart', (e) => {
-      const position = new PIXI.Point(e.touches.item(0).clientX, e.touches.item(0).clientY);
-      const found = props.app.renderer.plugins.interaction.hitTest(position, zoomable);
-      if (found) zoomable.emit('starttouch', e);
-    });*/
-
-    return zoomable;
-  }
-
-  customDidAttach = (instance: PIXI.Container) => {
-    instance.interactive = true;
-    instance.hitArea = { contains: () => true };
-
-    instance.on('wheel', (e: WheelEvent) => {
+      this.props = props;
       const normalizedEvent = normalizeWheel(e);
       const mousePosition = new PIXI.Point();
       this.props.app.renderer.
@@ -49,11 +30,13 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
       e.preventDefault();
     });
 
-    instance.on('starttouch', this.handleTouchStart);
-    instance.on('endtouch', this.handleTouchEnd);
-    instance.on('movetouch', this.handleTouchMove);
+    /*props.app.view.addEventListener('touchstart', (e) => {
+      const position = new PIXI.Point(e.touches.item(0).clientX, e.touches.item(0).clientY);
+      const found = props.app.renderer.plugins.interaction.hitTest(position, zoomable);
+      if (found) zoomable.emit('starttouch', e);
+    });*/
 
-    zoomEventEmitter.emit('zoom', instance);
+    return instance;
   }
 
   customWillDetach = (instance: PIXI.Container) => {
@@ -111,7 +94,10 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
     const nextXPos = position.x + (localPositionAfter.x - localPositionBefore.x) * scale.x;
     const nextYPos = position.y + (localPositionAfter.y - localPositionBefore.y) * scale.y;
     position.set(nextXPos, nextYPos);
-    zoomEventEmitter.emit('zoom', instance);
+    this.props.dispatch({type: 'zoom', payload: {
+      position: { x: nextXPos, y: nextYPos },
+      scale: { x: nextXScale, y: nextYScale },
+    }});
   }
 }
 
@@ -120,12 +106,16 @@ const ZoomablePIXI = CustomPIXIComponent<Props, PIXI.Container>(
 );
 
 const ZoomableContainer: React.SFC = props => (
-  <AppContext.Consumer>
-    {app =>
-      <ZoomablePIXI app={app}>
-        {props.children}
-      </ZoomablePIXI> }
-  </AppContext.Consumer>
+  <PixiPlotContext.Consumer>
+    { context =>
+      <AppContext.Consumer>
+        {app =>
+          <ZoomablePIXI app={app} dispatch={context.dispatch}>
+            {props.children}
+          </ZoomablePIXI> }
+      </AppContext.Consumer>
+    }
+  </PixiPlotContext.Consumer>
 );
 
 export default ZoomableContainer;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScaleBand, ScaleContinuousNumeric, ScaleOrdinal, ScalePoint } from 'd3-scale';
 import Axis, { AxisOrientation } from './Axis';
-import { zoomEventEmitter } from '../pixi/ZoomableContainer';
+import { DomPlotContext } from '../../PlotContext';
 
 export type AnyScale =
   ScaleContinuousNumeric<number, number>
@@ -23,48 +23,35 @@ interface Props {
   containerHeight: number;
 }
 
-interface State {
-  xScale: number;
-  yScale: number;
-  leftAxisScale?: AnyScale;
-  rightAxisScale?: AnyScale;
-  topAxisScale?: AnyScale;
-  bottomAxisScale?: AnyScale;
-}
+const getTransformedScale = (
+  scale: AnyScale,
+  translate: number,
+  scaleFactor: number,
+) => {
+  const newRange = scale.range();
+  newRange[0] *= scaleFactor;
+  newRange[0] += translate;
+  newRange[1] += translate;
+  return scale.copy().range(newRange) as AnyScale;
+};
 
-class PlotAxes extends React.PureComponent<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    zoomEventEmitter.on('zoom', this.handleZoom);
-    this.state = {
-      xScale: 1,
-      yScale: 1,
-      leftAxisScale: props.leftAxisScale,
-    };
-  }
+const PlotAxes: React.SFC<Props> = (props) => {
+  const { state } = React.useContext(DomPlotContext);
 
-  handleZoom = (zoomableContainer: PIXI.Container) => {
-    const { leftAxisScale } = this.props;
-    const { x: xScale, y: yScale } = zoomableContainer.scale;
-    const leftRange = [leftAxisScale.range()[0] * yScale, leftAxisScale.range()[1]];
-    const newLeftScale = leftAxisScale.copy().range(leftRange) as AnyScale;
-    this.setState({
-      xScale,
-      yScale,
-      leftAxisScale: newLeftScale,
-    });
-  }
+  const leftAxisScale = getTransformedScale(
+    props.leftAxisScale,
+    state.draggablePosition.y + state.zoomablePosition.y,
+    state.zoomableScale.y,
+  );
 
-  render() {
-    const {
+  const {
       leftLabel,
       marginLeft, marginTop, containerHeight, containerWidth,
-    } = this.props;
-    const { leftAxisScale } = this.state;
-    let leftAxis: JSX.Element;
+    } = props;
+  let leftAxis: JSX.Element;
 
-    if (leftAxisScale) {
-      leftAxis = (
+  if (leftAxisScale) {
+    leftAxis = (
         <g transform={`translate(${marginLeft},${marginTop})`}>
           <Axis orient={AxisOrientation.LEFT} scale={leftAxisScale}/>
           {leftLabel &&
@@ -77,9 +64,9 @@ class PlotAxes extends React.PureComponent<Props, State> {
             >{leftLabel}</text>
           }
         </g>);
-    }
+  }
 
-    return (
+  return (
       <svg
         style={{ position: 'absolute', left: 0, top: 0, pointerEvents: 'none' }}
         width={containerWidth}
@@ -87,8 +74,7 @@ class PlotAxes extends React.PureComponent<Props, State> {
       >
         {leftAxis}
       </svg>
-    );
-  }
-}
+  );
+};
 
 export default PlotAxes;

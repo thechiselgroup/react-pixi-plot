@@ -29,7 +29,7 @@ PIXI.loader.load(() => {
   render(
     <div style={{
       marginLeft:'25%', marginRight:'25%', marginTop: 50, marginBottom: 50,
-      border: '1px solid black',
+      border: '1px solid black', height: '100%', display: 'flex',
     }}>
       <PixiPlot
         leftAxisScale={yScale} leftLabel={'Literacy'}

@@ -1,13 +1,14 @@
 import { CustomPIXIComponent, Behavior, AppContext } from 'react-pixi-fiber';
 import * as PIXI from 'pixi.js';
 import { preventGlobalMouseEvents, restoreGlobalMouseEvents } from '../../globalEvents';
-import React from 'react';
+import React, { Dispatch } from 'react';
+import { PixiPlotContext, PixiPlotActions } from '../../PlotContext';
 
 const TYPE = 'DraggableContainer';
 
 interface Props {
   pixiInteractionManager: PIXI.interaction.InteractionManager;
-  // positionDidUpdate: () => void;
+  dispatch: Dispatch<PixiPlotActions>;
 }
 
 class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
@@ -16,24 +17,19 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
   draggedInstance: PIXI.Container;
 
   customDisplayObject = (props: Props) => {
-    const camera = new PIXI.Container();
-    this.props = props;
-    return camera;
-  }
-
-  customDidAttach = (instance: PIXI.Container) => {
+    const instance = new PIXI.Container();
     instance.interactive = true;
     instance.hitArea = { contains: () => true };
 
     instance.on('rightdown', (e: PIXI.interaction.InteractionEvent) => {
       this.draggedInstance = instance;
+      this.props = props;
       this.dragAnchor = e.data.getLocalPosition(this.draggedInstance.parent);
       e.stopPropagation();
       this.captureMouseEvents();
     });
 
     instance.on('touchStart', (e: PIXI.interaction.InteractionEvent) => {
-      console.log('touch');
       const originalEvent = e.data.originalEvent as TouchEvent;
       this.draggedInstance = instance;
       if (originalEvent.targetTouches.length === 1) {
@@ -42,6 +38,8 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
         delete this.dragAnchor;
       }
     });
+
+    return instance;
   }
 
   customWillDetach = (instance: PIXI.Container) => {
@@ -102,13 +100,13 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
     delete this.dragAnchor;
   }
 
-  handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+  /*handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
     if (e.targetTouches.length === 0) { // no more touches
       delete this.dragAnchor;
     }
-  }
+  }*/
 
-  handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+  /* = (e: React.TouchEvent<HTMLDivElement>) => {
     if (e.targetTouches.length === 1) {
       const touch = e.targetTouches.item(0);
       const touchPosition = this.eventRendererPosition(touch);
@@ -117,7 +115,7 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
         this.dragAnchor = touchPosition;
       }
     }
-  }
+  }*/
 
   /**
    * Handles mouse movement events.
@@ -148,6 +146,7 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
     const nextXPos = position.x + (to.x - from.x);
     const nextYPos = position.y + (to.y - from.y);
     this.draggedInstance.position.set(nextXPos, nextYPos);
+    this.props.dispatch({ type: 'drag', payload: { position: { x: nextXPos, y: nextYPos } } });
   }
 
 }
@@ -156,13 +155,23 @@ const DraggablePIXI = CustomPIXIComponent<Props, PIXI.Container>(
   new DraggableContainerBehavior(), TYPE,
 );
 
-const DraggableContainer: React.SFC = props => (
-  <AppContext.Consumer>
-    {app =>
-      <DraggablePIXI pixiInteractionManager={app.renderer.plugins.interaction}>
-        {props.children}
-      </DraggablePIXI> }
-  </AppContext.Consumer>
-);
+const DraggableContainer: React.SFC = (props) => {
+
+  return (
+    <PixiPlotContext.Consumer>
+      { context =>
+        <AppContext.Consumer>
+          {app =>
+            <DraggablePIXI
+              pixiInteractionManager={app.renderer.plugins.interaction}
+              dispatch={context.dispatch}
+            >
+              {props.children}
+            </DraggablePIXI> }
+        </AppContext.Consumer>
+      }
+    </PixiPlotContext.Consumer>
+  );
+};
 
 export default DraggableContainer;

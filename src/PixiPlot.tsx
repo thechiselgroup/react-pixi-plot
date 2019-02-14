@@ -4,6 +4,7 @@ import * as PIXI from 'pixi.js';
 import { Stage } from 'react-pixi-fiber';
 import ContainerDimensions from 'react-container-dimensions';
 import Axes, { AnyScale } from './components/dom/Axes';
+import { PlotContextProvider, DomPlotContext, PixiPlotContext } from './PlotContext';
 
 const preventDefault = (e: React.MouseEvent<HTMLElement>) => {
   e.nativeEvent.preventDefault();
@@ -251,32 +252,39 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
       <div style={{ width: '100%', height: '100%' }} onContextMenu={preventDefault}>
         <ContainerDimensions>
           { ({ width, height }) =>
-            <React.Fragment>
-              <Axes
-                marginLeft={left}
-                marginRight={right}
-                marginBottom={bottom}
-                marginTop={top}
-                containerWidth={width}
-                containerHeight={height}
-                leftAxisScale={leftAxisScale}
-                leftLabel={leftLabel}
-              />
-              <div
-                style={{
-                  marginLeft: left, marginRight: right, marginTop: top, marginBottom: bottom,
-                }}
-              >
-                <Stage
-                  width={width - left - right}
-                  height={height - top - bottom}
-                  options={STAGE_OPTIONS}
+            <PlotContextProvider>
+              <React.Fragment>
+                  <Axes
+                    marginLeft={left}
+                    marginRight={right}
+                    marginBottom={bottom}
+                    marginTop={top}
+                    containerWidth={width}
+                    containerHeight={height}
+                    leftAxisScale={leftAxisScale}
+                    leftLabel={leftLabel}
+                  />
+                <div
+                  style={{
+                    marginLeft: left, marginRight: right, marginTop: top, marginBottom: bottom,
+                  }}
                 >
-                  {this.props.children}
-                </Stage>
-              </div>
-            </React.Fragment>
-        }
+                <DomPlotContext.Consumer>
+                  { value =>
+                    <Stage
+                      width={width - left - right}
+                      height={height - top - bottom}
+                      options={STAGE_OPTIONS}
+                    >
+                      <PixiPlotContext.Provider value={value} >
+                        {this.props.children}
+                      </PixiPlotContext.Provider>
+                    </Stage>}
+                </DomPlotContext.Consumer>
+                </div>
+              </React.Fragment>
+            </PlotContextProvider>
+          }
         </ContainerDimensions>
       </div>
     );

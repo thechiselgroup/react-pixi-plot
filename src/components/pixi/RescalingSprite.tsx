@@ -1,57 +1,55 @@
+import React from 'react';
 import * as PIXI from 'pixi.js';
-import { CustomPIXIComponent, Behavior, SpriteProperties } from 'react-pixi-fiber';
-import { zoomEventEmitter } from './ZoomableContainer';
-import { hasParent } from '../../utils';
+import { SpriteProperties, Sprite } from 'react-pixi-fiber';
+import { PixiPlotContext } from '../../PlotContext';
 
-interface RescalingSpriteProperties extends SpriteProperties {
+interface WrapperProps extends SpriteProperties {
   pixelWidth: number;
   pixelHeight: number;
 }
 
-interface RescalingSprite extends PIXI.Sprite {
-  _pixelWidth: number;
-  _pixelHeight: number;
+interface Props extends WrapperProps {
+  parentScale: {x: number, y: number};
 }
 
-class RescalingSpriteBehavior implements Behavior<RescalingSpriteProperties, RescalingSprite> {
-  attachedSprites: Set<RescalingSprite>;
+interface State {
+  scale: PIXI.Point;
+}
 
-  constructor() {
-    this.attachedSprites = new Set();
-    zoomEventEmitter.on('zoom', this.rescaleSprites);
+class RescalingPIXI extends React.PureComponent<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      scale: this.getScale(),
+    };
   }
 
-  customDisplayObject = (props: RescalingSpriteProperties) => {
-    const s =  new PIXI.Sprite(props.texture) as RescalingSprite;
-    s._pixelHeight = props.pixelHeight;
-    s._pixelWidth = props.pixelWidth;
-    return s;
+  getScale() {
+    const { x, y } = this.props.parentScale;
+    const { pixelWidth, pixelHeight, texture } = this.props;
+    const nextXScale = pixelWidth / (x * texture.width);
+    const nextYScale = pixelHeight / (y * texture.height);
+    return new PIXI.Point(nextXScale, nextYScale);
   }
 
-  customDidAttach = (s: RescalingSprite) => {
-    this.attachedSprites.add(s);
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.parentScale !== this.props.parentScale) {
+      this.setState({
+        scale : this.getScale(),
+      });
+    }
   }
 
-  customWillDetach = (s: RescalingSprite) => {
-    this.attachedSprites.delete(s);
+  render() {
+    const { scale } = this.state;
 
-  }
-
-  rescaleSprites = (zoomingContainer: PIXI.Container) => {
-    this.attachedSprites.forEach((s) => {
-      if (!hasParent(s, zoomingContainer)) {
-        return;
-      }
-
-      const { a: xScale, d: yScale } = s.parent.worldTransform;
-      const nextXScale = s._pixelWidth / (xScale * s.texture.width);
-      const nextYScale = s._pixelHeight / (yScale * s.texture.height);
-      if (s.scale.x !== nextXScale || s.scale.y !== nextYScale) {
-        s.scale.set(nextXScale, nextYScale);
-
-      }
-    });
+    return <Sprite {...this.props} scale={scale}/>;
   }
 }
 
-export default CustomPIXIComponent(new RescalingSpriteBehavior, 'RescalingSprite');
+const RescalingSprite: React.SFC<WrapperProps> = props =>
+  <PixiPlotContext.Consumer>
+    { ({ state }) => <RescalingPIXI parentScale={state.zoomableScale} {...props}/>}
+  </PixiPlotContext.Consumer>;
+
+export default RescalingSprite;
