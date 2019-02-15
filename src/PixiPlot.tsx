@@ -15,6 +15,12 @@ export interface PixiPlotProps {
 
   leftAxisScale?: AnyScale;
   leftLabel?: string;
+  rightAxisScale?: AnyScale;
+  rightLabel?: string;
+  topAxisScale?: AnyScale;
+  topLabel?: string;
+  bottomAxisScale?: AnyScale;
+  bottomLabel?: string;
 
   /**
    * A Rectangle defining the bounds of the display objects.
@@ -232,21 +238,12 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
 
   }*/
 
-  /**
-   * The {@link https://reactjs.org/docs/react-dom.html#render|React.Component render}
-   * method that must be defined for presentational components.
-   * @method
-   * @returns {JSX} PixiVisualization component that is initialized with functionality.
-   */
   render() {
     const { left, right, top, bottom } = this.props.rendererMargins;
-    const { leftAxisScale, leftLabel } = this.props;
-    /*const style = {
-      marginLeft: left ,
-      marginRight: right,
-      marginTop: top ,
-      marginBottom: bottom,
-    };*/
+    const {
+      leftAxisScale, leftLabel, rightAxisScale,
+      rightLabel, bottomAxisScale, bottomLabel, topAxisScale, topLabel,
+    } = this.props;
 
     return (
       <div style={{ width: '100%', height: '100%' }} onContextMenu={preventDefault}>
@@ -254,16 +251,22 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
           { ({ width, height }) =>
             <PlotContextProvider>
               <React.Fragment>
-                  <Axes
-                    marginLeft={left}
-                    marginRight={right}
-                    marginBottom={bottom}
-                    marginTop={top}
-                    containerWidth={width}
-                    containerHeight={height}
-                    leftAxisScale={leftAxisScale}
-                    leftLabel={leftLabel}
-                  />
+                <Axes
+                  marginLeft={left}
+                  marginRight={right}
+                  marginBottom={bottom}
+                  marginTop={top}
+                  containerWidth={width}
+                  containerHeight={height}
+                  leftAxisScale={leftAxisScale}
+                  leftLabel={leftLabel}
+                  rightAxisScale={rightAxisScale}
+                  rightLabel={rightLabel}
+                  topAxisScale={topAxisScale}
+                  topLabel={topLabel}
+                  bottomAxisScale={bottomAxisScale}
+                  bottomLabel={bottomLabel}
+                />
                 <div
                   style={{
                     marginLeft: left, marginRight: right, marginTop: top, marginBottom: bottom,

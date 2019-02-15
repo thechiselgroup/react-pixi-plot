@@ -11,9 +11,9 @@ import { RescalingSprite, DraggableContainer, ZoomableContainer } from '../../..
 PIXI.loader.add('circle', white_circle);
 PIXI.loader.load(() => {
   const xScale = scaleLinear()
-    .domain(extent(countries, (c: any) => c.NetMigration as number)).range([0, 500]);
+    .domain(extent(countries, (c: any) => c.NetMigration as number)).range([0, 100]);
   const yScale = scaleLinear()
-    .domain(extent(countries, (c: any) => c.Literacy as number)).range([300, 0]);
+    .domain(extent(countries, (c: any) => c.Literacy as number)).range([100, 0]);
 
   const displayObjects = countries.map((country) => {
     return <RescalingSprite
@@ -33,7 +33,8 @@ PIXI.loader.load(() => {
     }}>
       <PixiPlot
         leftAxisScale={yScale} leftLabel={'Literacy'}
-        rendererMargins={{ left:50, right:0, top:0, bottom:0 }}
+        bottomAxisScale={xScale} bottomLabel={'Net Migration'}
+        rendererMargins={{ left:50, right:50, top:50, bottom:50 }}
       >
         <DraggableContainer>
           <ZoomableContainer>
@@ -42,8 +43,9 @@ PIXI.loader.load(() => {
         </DraggableContainer>
       </PixiPlot>
       <PixiPlot
-        leftAxisScale={yScale} leftLabel={'Literacy'}
-        rendererMargins={{ left:50, right:0, top:0, bottom:0 }}
+        rightAxisScale={yScale} rightLabel={'Literacy'}
+        topAxisScale={xScale} topLabel={'Net Migration'}
+        rendererMargins={{ left:50, right:50, top:50, bottom:50 }}
       >
         <DraggableContainer>
           <ZoomableContainer>
