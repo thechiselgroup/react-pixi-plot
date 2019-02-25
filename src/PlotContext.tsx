@@ -4,12 +4,16 @@ interface PlotState {
   draggablePosition: {x: number, y:number};
   zoomablePosition: {x: number, y: number};
   zoomableScale: {x: number, y: number};
+  appWidth: number;
+  appHeight: number;
 }
 
 const defaultState : PlotState = {
   draggablePosition: { x:0, y:0 },
   zoomablePosition: { x:0, y:0 },
   zoomableScale: { x:1, y:1 },
+  appHeight: 0,
+  appWidth: 0,
 };
 
 export type PixiPlotActions =
@@ -38,8 +42,15 @@ interface IPlotContext {
 }
 const DomPlotContext = React.createContext<IPlotContext>({});
 
-const PlotContextProvider: React.SFC = (props) => {
-  const [state, dispatch] = React.useReducer(reducer, defaultState);
+interface ProviderProps {
+  appHeight: number;
+  appWidth: number;
+}
+
+const PlotContextProvider: React.SFC<ProviderProps> = (props) => {
+  const [state, dispatch] = React.useReducer<typeof reducer>(reducer, defaultState);
+  state.appHeight = props.appHeight;
+  state.appWidth = props.appWidth;
   const value = { state, dispatch };
 
   return <DomPlotContext.Provider value={value}>{props.children}</DomPlotContext.Provider>;

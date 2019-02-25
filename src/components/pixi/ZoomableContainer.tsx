@@ -10,9 +10,46 @@ const TYPE = 'ZoomableContainer';
 interface Props {
   app: PIXI.Application;
   dispatch: Dispatch<PixiPlotActions>;
+  appWidth: number;
+  appHeight: number;
 }
 
-class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
+interface ContainerDisplayObject extends PIXI.Container {
+  _dispatch: Dispatch<PixiPlotActions>;
+}
+
+ /**
+   * Sets the zoom of the view.
+   * @method
+   * @param delta The magitude of the zoom change.
+   * @param mousePosition The location of the mouse when the zoom occured.
+   */
+const zoom = (
+  instance: PIXI.Container,
+  factorX: number, factorY:number,
+  mousePosition: PIXI.Point,
+) => {
+  const { scale, position } = instance;
+
+  const localPositionBefore = instance.toLocal(mousePosition);
+  const nextXScale = factorX * scale.x;
+  const nextYScale = factorY * scale.y;
+  scale.set(nextXScale, nextYScale);
+
+  const localPositionAfter = instance.toLocal(mousePosition);
+
+    // reposition the container so that the mouse points to the same position after zooming
+  const nextXPos = position.x + (localPositionAfter.x - localPositionBefore.x) * scale.x;
+  const nextYPos = position.y + (localPositionAfter.y - localPositionBefore.y) * scale.y;
+  position.set(nextXPos, nextYPos);
+  this.props.dispatch({type: 'zoom', payload: {
+    position: { x: nextXPos, y: nextYPos },
+    scale: { x: nextXScale, y: nextYScale },
+  }});
+};
+
+class ZoomableContainerBehavior implements Behavior<Props, PIXI.Container> {
+  applyDisplayObjectProps: any; // created by react-pixi-fiber
   props: Props;
   initialPinchDistance: number;
 
@@ -25,7 +62,8 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
       this.props.app.renderer.
         plugins.interaction.
         mapPositionToPoint(mousePosition, e.clientX, e.clientY);
-      this.zoom(instance, Math.pow(2, -normalizedEvent.pixelY / 500), mousePosition);
+      const zoomFactor = Math.pow(2, -normalizedEvent.pixelY / 500);
+      zoom(instance, zoomFactor, zoomFactor, mousePosition);
       e.stopPropagation();
       e.preventDefault();
     });
@@ -37,6 +75,24 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
     });*/
 
     return instance;
+  }
+
+  customApplyProps(displayObject: ContainerDisplayObject, oldProps: Props, newProps: Props) {
+    this.applyDisplayObjectProps(oldProps, newProps);
+    if (oldProps.dispatch !== newProps.dispatch) {
+      displayObject._dispatch = newProps.dispatch;
+    }
+
+    if (displayObject.width !== newProps.appWidth || displayObject.height !== newProps.appHeight) {
+      zoom(
+        displayObject,
+        newProps.appWidth / displayObject.width,
+        newProps.appHeight / displayObject.height,
+        new PIXI.Point(),
+      );
+    }
+    console.log(newProps.appHeight);
+    console.log(newProps.appWidth);
   }
 
   customWillDetach = (instance: PIXI.Container) => {
@@ -63,7 +119,8 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
       const a = this.getTouchPosition(targetTouches.item(0));
       const b = this.getTouchPosition(targetTouches.item(1));
       const newPinchDistance = distance(a, b);
-      this.zoom(e.target as PIXI.Container, newPinchDistance / this.initialPinchDistance, a);
+      const zoomFactor = newPinchDistance / this.initialPinchDistance;
+      zoom(e.target as PIXI.Container, zoomFactor, zoomFactor, a);
     }
   }
 
@@ -73,36 +130,10 @@ class DraggableContainerBehavior implements Behavior<Props, PIXI.Container> {
       .mapPositionToPoint(mousePosition, mouseEvent.clientX, mouseEvent.clientY);
     return mousePosition;
   }
-
-    /**
-   * Sets the zoom of the view.
-   * @method
-   * @param delta The magitude of the zoom change.
-   * @param mousePosition The location of the mouse when the zoom occured.
-   */
-  zoom = (instance: PIXI.Container, factor: number, mousePosition: PIXI.Point) => {
-    const { scale, position } = instance;
-
-    const localPositionBefore = instance.toLocal(mousePosition);
-    const nextXScale = factor * scale.x;
-    const nextYScale = factor * scale.y;
-    scale.set(nextXScale, nextYScale);
-
-    const localPositionAfter = instance.toLocal(mousePosition);
-
-    // reposition the container so that the mouse points to the same position after zooming
-    const nextXPos = position.x + (localPositionAfter.x - localPositionBefore.x) * scale.x;
-    const nextYPos = position.y + (localPositionAfter.y - localPositionBefore.y) * scale.y;
-    position.set(nextXPos, nextYPos);
-    this.props.dispatch({type: 'zoom', payload: {
-      position: { x: nextXPos, y: nextYPos },
-      scale: { x: nextXScale, y: nextYScale },
-    }});
-  }
 }
 
 const ZoomablePIXI = CustomPIXIComponent<Props, PIXI.Container>(
-  new DraggableContainerBehavior(), TYPE,
+  new ZoomableContainerBehavior(), TYPE,
 );
 
 const ZoomableContainer: React.SFC = props => (
@@ -110,7 +141,12 @@ const ZoomableContainer: React.SFC = props => (
     { context =>
       <AppContext.Consumer>
         {app =>
-          <ZoomablePIXI app={app} dispatch={context.dispatch}>
+          <ZoomablePIXI
+            app={app}
+            dispatch={context.dispatch}
+            appHeight={context.state.appHeight}
+            appWidth={context.state.appWidth}
+          >
             {props.children}
           </ZoomablePIXI> }
       </AppContext.Consumer>

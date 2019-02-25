@@ -249,7 +249,7 @@ export default class PixiPlot extends React.Component<PixiPlotProps, PixiPlotSta
       <div style={{ width: '100%', height: '100%' }} onContextMenu={preventDefault}>
         <ContainerDimensions>
           { ({ width, height }) =>
-            <PlotContextProvider>
+            <PlotContextProvider appHeight={height - top - bottom} appWidth={width - left - right}>
               <React.Fragment>
                 <Axes
                   marginLeft={left}
