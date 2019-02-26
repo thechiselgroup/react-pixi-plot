@@ -25,7 +25,7 @@ interface ContainerDisplayObject extends PIXI.Container {
    * @param mousePosition The location of the mouse when the zoom occured.
    */
 const zoom = (
-  instance: PIXI.Container,
+  instance: ContainerDisplayObject,
   factorX: number, factorY:number,
   mousePosition: PIXI.Point,
 ) => {
@@ -42,7 +42,7 @@ const zoom = (
   const nextXPos = position.x + (localPositionAfter.x - localPositionBefore.x) * scale.x;
   const nextYPos = position.y + (localPositionAfter.y - localPositionBefore.y) * scale.y;
   position.set(nextXPos, nextYPos);
-  this.props.dispatch({type: 'zoom', payload: {
+  instance._dispatch({type: 'zoom', payload: {
     position: { x: nextXPos, y: nextYPos },
     scale: { x: nextXScale, y: nextYScale },
   }});
@@ -54,7 +54,8 @@ class ZoomableContainerBehavior implements Behavior<Props, PIXI.Container> {
   initialPinchDistance: number;
 
   customDisplayObject = (props: Props) => {
-    const instance = new PIXI.Container();
+    const instance = new PIXI.Container() as ContainerDisplayObject;
+    instance._dispatch = props.dispatch;
     props.app.view.addEventListener('wheel', (e) => {
       this.props = props;
       const normalizedEvent = normalizeWheel(e);
@@ -83,16 +84,25 @@ class ZoomableContainerBehavior implements Behavior<Props, PIXI.Container> {
       displayObject._dispatch = newProps.dispatch;
     }
 
-    if (displayObject.width !== newProps.appWidth || displayObject.height !== newProps.appHeight) {
-      zoom(
-        displayObject,
-        newProps.appWidth / displayObject.width,
-        newProps.appHeight / displayObject.height,
-        new PIXI.Point(),
-      );
+    if (oldProps.appWidth !== newProps.appWidth || oldProps.appWidth !== newProps.appHeight) {
+      const updateZoom = () => {
+        const bounds = displayObject.getBounds();
+        if (bounds.height !== 0 && bounds.width !== 0) {
+          zoom(
+            displayObject,
+            newProps.appWidth / displayObject.width,
+            newProps.appHeight / displayObject.height,
+            new PIXI.Point(),
+          );
+        } else {
+          /**
+           * Before the first render, the bounds are not calculated, so we wait a bit and try again
+           */
+          setTimeout(updateZoom, 10);
+        }
+      };
+      updateZoom();
     }
-    console.log(newProps.appHeight);
-    console.log(newProps.appWidth);
   }
 
   customWillDetach = (instance: PIXI.Container) => {
@@ -120,7 +130,7 @@ class ZoomableContainerBehavior implements Behavior<Props, PIXI.Container> {
       const b = this.getTouchPosition(targetTouches.item(1));
       const newPinchDistance = distance(a, b);
       const zoomFactor = newPinchDistance / this.initialPinchDistance;
-      zoom(e.target as PIXI.Container, zoomFactor, zoomFactor, a);
+      zoom(e.target as ContainerDisplayObject, zoomFactor, zoomFactor, a);
     }
   }
 
