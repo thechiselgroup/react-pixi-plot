@@ -43,7 +43,7 @@ class RescalingPIXI extends React.PureComponent<Props, State> {
   render() {
     const { scale } = this.state;
 
-    return <Sprite {...this.props} scale={scale}/>;
+    return <Sprite {...this.props} scale={scale} />;
   }
 }
 

@@ -16,3 +16,6 @@ export { ZoomableContainer };
 
 import RescalingSprite from './components/pixi/RescalingSprite';
 export { RescalingSprite };
+
+import SelectionContainer from './components/pixi/SelectionContainer';
+export { SelectionContainer };

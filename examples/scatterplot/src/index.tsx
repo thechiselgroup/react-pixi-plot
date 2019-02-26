@@ -6,7 +6,8 @@ import { PixiPlot } from '../../../src';
 import white_circle from './white_circle.png';
 import { scaleLinear } from 'd3-scale';
 import { extent } from 'd3-array';
-import { RescalingSprite, DraggableContainer, ZoomableContainer } from '../../../src/';
+import { RescalingSprite,
+  DraggableContainer, ZoomableContainer, SelectionContainer } from '../../../src/';
 
 PIXI.loader.add('circle', white_circle);
 PIXI.loader.load(() => {
@@ -49,7 +50,9 @@ PIXI.loader.load(() => {
       >
         <DraggableContainer>
           <ZoomableContainer>
-            {displayObjects}
+            <SelectionContainer onSelect={e => console.log(e)} showBrushOverlay={true} >
+              {displayObjects}
+            </SelectionContainer>
           </ZoomableContainer>
         </DraggableContainer>
       </PixiPlot>
