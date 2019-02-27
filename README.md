@@ -64,7 +64,7 @@ This library provides the following components allowing for the easy creation of
 ### `<PixiPlot />`
 
 ```js
-import {PixiPlot} from '@thechiselgroup/react-pixi-plot';
+import {PixiPlot} from 'react-pixi-plot';
 ```
 
 `PixiPlot` is the main component to use to render a plot. It will render a PIXI.js `canvas`, using the `react-pixi-fiber` `Stage` component.
@@ -136,7 +136,7 @@ interface PixiPlotProps {
 ### `<DraggableContainer />`
 
 ```js
-import {DraggableContainer} from '@thechiselgroup/react-pixi-plot';
+import {DraggableContainer} from 'react-pixi-plot';
 ```
 
 A simple PIXI container that makes the viewport draggable by using the mouse right click.
@@ -144,7 +144,7 @@ A simple PIXI container that makes the viewport draggable by using the mouse rig
 ### `<ZoomableContainer />`
 
 ```js
-import {ZoomableContainer} from '@thechiselgroup/react-pixi-plot';
+import {ZoomableContainer} from 'react-pixi-plot';
 ```
 
 A PIXI container that makes the viewport zoomable by scrolling. If used in combination with `DraggableContainer`, `ZoomableContainer` should be a child of `DraggableContainer`.
@@ -152,7 +152,7 @@ A PIXI container that makes the viewport zoomable by scrolling. If used in combi
 ### `<SelectionContainer />`
 
 ```js
-import {SelectionContainer} from '@thechiselgroup/react-pixi-plot';
+import {SelectionContainer} from 'react-pixi-plot';
 ```
 
 A container that captures mouse interactions such as selection (left click), hovering, and brushing (click and drag). During brushing operations, an optional selection overlay can be rendered.
@@ -160,7 +160,7 @@ A container that captures mouse interactions such as selection (left click), hov
 ### `<RescalingSprite />`
 
 ```js
-import {RescalingSprite} from '@thechiselgroup/react-pixi-plot';
+import {RescalingSprite} from 'react-pixi-plot';
 ```
 
 To be used in combination with a `ZoomableContainer`, this sprite always renders with the same height and width in pixels. Useful for instance for scatterplots, allowing you to get more detail values when zooming without ending up with very large sprites.
@@ -168,7 +168,7 @@ To be used in combination with a `ZoomableContainer`, this sprite always renders
 ### `<SVGContainer />`
 
 ```js
-import {SVGContainer} from '@thechiselgroup/react-pixi-plot';
+import {SVGContainer} from 'react-pixi-plot';
 ```
 
 A container that will reproduce the contents of an SVG HTML element with one or more `PIXI.Graphics`.
