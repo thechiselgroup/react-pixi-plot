@@ -2,8 +2,8 @@ import PixiPlot from './PixiPlot';
 export { PixiPlot };
 export default PixiPlot;
 
-import SVGGraphics from './SVGGraphics';
-export { SVGGraphics };
+import SVGContainer from './components/pixi/SVGContainer';
+export { SVGContainer };
 
 import { HoverEvent, SelectEvent } from './types';
 export { HoverEvent, SelectEvent };

@@ -66,22 +66,6 @@ const STAGE_OPTIONS = {
 };
 
 const PixiPlot: React.SFC<PixiPlotProps>  = (props) => {
-
- /* handleHover = (e: HoverEvent) => {
-    if (e.pixelBounds.width !== 0 && e.pixelBounds.height !== 0) { // we are currently brushing
-      this.showSelectionOverlay(e.pixelBounds, e.nativeEvent.ctrlKey);
-      if (e.nativeEvent.ctrlKey) { // if we are unselecting the data, don't hover it
-        return;
-      }
-    }
-
-    this.props.onHover({
-      ...e,
-      plotBounds: this.pixelToPlotBounds(e.pixelBounds),
-    },                 this);
-
-  }*/
-
   const { left, right, top, bottom } = props.rendererMargins;
   const {
       leftAxisScale, leftLabel, rightAxisScale,
