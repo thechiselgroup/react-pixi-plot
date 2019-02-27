@@ -1,6 +1,6 @@
 {
-  "name": "@thechiselgroup/react-pixi-plot",
-  "version": "1.0.0-rc.1",
+  "name": "react-pixi-plot",
+  "version": "1.0.0-rc.2",
   "description": "A React component rendering a zoomable and draggable PIXI.js scene. Intended to render 2d plots",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -44,10 +44,10 @@
     "typescript": "^3.3.1"
   },
   "peerDependencies": {
-    "d3-scale": "^2.2.2",
+    "d3-scale": "^2.0.0",
     "pixi.js": "^4.7.0",
     "react": "^16.8.0",
-    "react-pixi-fiber": "^0.7.0"
+    "react-pixi-fiber": "~0.7.0"
   },
   "config": {
     "commitizen": {
