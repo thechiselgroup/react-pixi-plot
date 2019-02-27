@@ -97,6 +97,7 @@ const PixiPlot: React.SFC<PixiPlotProps>  = (props) => {
                 <div
                   style={{
                     marginLeft: left, marginRight: right, marginTop: top, marginBottom: bottom,
+                    position: 'absolute',
                   }}
                 >
                 <DomPlotContext.Consumer>
