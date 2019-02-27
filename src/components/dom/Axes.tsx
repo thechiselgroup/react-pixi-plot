@@ -53,6 +53,7 @@ const getTransformedScale = (
     const newRange = scale.range();
     newRange[0] *= scaleFactor;
     newRange[0] += translate;
+    newRange[1] *= scaleFactor;
     newRange[1] += translate;
     newScale.range(newRange);
   }
