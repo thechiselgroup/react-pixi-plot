@@ -1,13 +1,13 @@
 {
   "name": "@thechiselgroup/react-pixi-plot",
-  "version": "0.2.2",
+  "version": "1.0.0-rc.1",
   "description": "A React component rendering a zoomable and draggable PIXI.js scene. Intended to render 2d plots",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "release": "standard-version",
-    "prepare": "tsc"
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -26,17 +26,28 @@
   "homepage": "https://github.com/thechiselgroup/react-pixi-plot#readme",
   "dependencies": {
     "colorcolor": "^1.1.1",
-    "normalize-wheel": "^1.0.1"
+    "d3-axis": "1.0.12",
+    "d3-selection": "^1.4.0",
+    "normalize-wheel": "^1.0.1",
+    "react-container-dimensions": "1.4.1"
   },
   "devDependencies": {
+    "@types/d3-axis": "^1.0.11",
+    "@types/d3-scale": "^2.1.0",
     "@types/pixi.js": "^4.7.2",
-    "@types/react": "^16.3.10",
+    "@types/react": "^16.8.0",
     "cz-conventional-changelog": "^2.1.0",
-    "standard-version": "^4.4.0"
+    "standard-version": "^4.4.0",
+    "tslint": "^5.12.1",
+    "tslint-config-airbnb": "^5.11.1",
+    "tslint-react": "^3.6.0",
+    "typescript": "^3.3.1"
   },
   "peerDependencies": {
+    "d3-scale": "^2.2.2",
     "pixi.js": "^4.7.0",
-    "react": "^16.0.0"
+    "react": "^16.8.0",
+    "react-pixi-fiber": "^0.7.0"
   },
   "config": {
     "commitizen": {

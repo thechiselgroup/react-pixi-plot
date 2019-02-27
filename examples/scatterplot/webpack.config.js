@@ -1,10 +1,12 @@
 const path = require('path')
 
 module.exports = {
+	mode: 'development',
 	entry: path.resolve('src/index.tsx'),
 	output: {
 		path: path.resolve('dist'),
-		filename: 'index.js',
+		filename: '[name].js',
+		publicPath:'http://localhost:8080/'
 	},
 	module: {
 		rules: [
@@ -13,6 +15,9 @@ module.exports = {
 				exclude: /node_modules/,
 				use: {
 					loader: 'ts-loader',
+					options: {
+						transpileOnly: true
+					}
 				}
 			},
 			{
@@ -21,7 +26,17 @@ module.exports = {
 			}
 		]
 	},
+	devServer: {
+		hot: false,
+		port: 8080
+	},
 	resolve: {
-		extensions: ['.json', '.ts', '.tsx', '.js', '.jsx']
+		extensions: ['.json', '.ts', '.tsx', '.js', '.jsx'],
+		alias: {
+			react: path.resolve(__dirname, 'node_modules/react/'),
+			'pixi.js': path.resolve(__dirname, 'node_modules/pixi.js/'),
+			'react-pixi-fiber': path.resolve(__dirname, 'node_modules/react-pixi-fiber/'),
+			'react-dom': path.resolve(__dirname, 'node_modules/react-dom/'),
+		}
 	}
 }
