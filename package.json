@@ -47,7 +47,7 @@
     "d3-scale": "^2.0.0",
     "pixi.js": "^4.7.0",
     "react": "^16.8.0",
-    "react-pixi-fiber": "~0.7.0"
+    "react-pixi-fiber": ">=0.7.0"
   },
   "config": {
     "commitizen": {
