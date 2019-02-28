@@ -16,6 +16,7 @@ interface Props {
   topAxisScale?: AnyScale;
   topLabel?: string;
   bottomAxisScale?: AnyScale;
+  bottomTicksRotate?: number;
   bottomLabel?: string;
   marginLeft: number;
   marginRight: number;
@@ -74,6 +75,7 @@ const PlotAxes: React.SFC<Props> = (props) => {
     leftLabel, rightLabel, topLabel, bottomLabel,
     marginLeft, marginRight, marginTop, marginBottom,
     containerHeight, containerWidth,
+    bottomTicksRotate,
   } = props;
 
   const leftAxisScale = getTransformedScale(
@@ -157,7 +159,11 @@ const PlotAxes: React.SFC<Props> = (props) => {
   if (bottomAxisScale) {
     bottomAxis = (
       <g transform={`translate(${marginLeft},${containerHeight - marginBottom})`}>
-      <Axis orient={AxisOrientation.BOTTOM} scale={bottomAxisScale}/>
+      <Axis
+        orient={AxisOrientation.BOTTOM}
+        scale={bottomAxisScale}
+        ticksRotate={bottomTicksRotate}
+      />
       {bottomLabel &&
         <text
           fontSize="15"

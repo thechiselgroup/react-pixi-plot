@@ -20,6 +20,7 @@ interface Props {
   | ScalePoint<any>;
   tickValues?: number[] | string[];
   numTicks?: number;
+  ticksRotate?: number;
 }
 
 export default class Axis extends Component<Props> {
@@ -38,16 +39,24 @@ export default class Axis extends Component<Props> {
   }
 
   renderAxis() {
-    const axisType = `axis${this.props.orient}` as
+    const { orient, tickValues, scale, numTicks, ticksRotate } = this.props;
+    const axisType = `axis${orient}` as
       'axisLeft'
       | 'axisBottom'
       | 'axisTop'
       | 'axisRight';
 
-    const axis = d3Axis[axisType](this.props.scale)
-    .tickSize(3).ticks(this.props.numTicks).tickValues(this.props.tickValues);
+    const axis = d3Axis[axisType](scale)
+    .tickSize(3).ticks(numTicks).tickValues(tickValues);
 
-    d3Select(this.axisElement).call(axis);
+    const selection = d3Select(this.axisElement).call(axis);
+    if (ticksRotate) {
+      selection.selectAll('text')
+        .style('text-anchor', 'end')
+        .attr('dx', '-.8em')
+        .attr('dy', '.15em')
+        .attr('transform', `rotate(${ticksRotate})`);
+    }
   }
 
   render() {

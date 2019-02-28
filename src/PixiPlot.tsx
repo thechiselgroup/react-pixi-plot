@@ -54,6 +54,8 @@ export interface PixiPlotProps {
    */
   readonly bottomLabel?: string;
 
+  readonly bottomTicksRotate?: number;
+
   /**
    * The margins around the renderer, where you can display axes for instance
    */
@@ -70,6 +72,7 @@ const PixiPlot: React.SFC<PixiPlotProps>  = (props) => {
   const {
       leftAxisScale, leftLabel, rightAxisScale,
       rightLabel, bottomAxisScale, bottomLabel, topAxisScale, topLabel,
+      bottomTicksRotate,
     } = props;
 
   return (
@@ -93,6 +96,7 @@ const PixiPlot: React.SFC<PixiPlotProps>  = (props) => {
                   topLabel={topLabel}
                   bottomAxisScale={bottomAxisScale}
                   bottomLabel={bottomLabel}
+                  bottomTicksRotate={bottomTicksRotate}
                 />
                 <div
                   style={{
